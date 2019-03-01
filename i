@@ -24,9 +24,17 @@ void draw() {
   case "GAME":
     Game();
     break;
+  case "POWEREDIT":
+    PowerEdit();
+    break;
   }
 }
-void Game(){
+void PowerEdit() {
+  rectMode(CENTER);
+  fill(120);
+  rect(width/2, height/2, width/5*2.25, height/5*1.5);
+}
+void Game() {
   rectMode(CENTER);
   a.show();
   b.show();
@@ -57,7 +65,7 @@ void Game(){
   rect(200, height, 180, 50);
   textSize(90);
   textAlign(TOP, CORNER);
-  if(Turn == 1){
+  if (Turn == 1) {
     fill(a.Color);
     text(a.name, 5, height - 75);
     noFill();
@@ -72,7 +80,11 @@ void Game(){
     fill(0, 255, 0);
     rectMode(CORNER);
     rect(width - 398, height - 133, constrain(map(a.Health, 0, 100, 0, 346), 0, 346), 46);
-    a.Health-=.5;
+    fill(255, 30, 30);
+    rect(width - 398, height - 58, constrain(map(a.Power, 0, 100, 0, 296), 0, 296), 46);
+    fill(0, 0, 255);
+    rectMode(CENTER);
+    rect(width - 75, height - 35, 46, 46);
   }
 }
 void MainMenu() {
@@ -137,44 +149,49 @@ void mousePressed() {
     }
     break;
   case "MAINMENU":
-    if(dist(mouseX, mouseY, width/8, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8, height/5 * 3.5) <= 30) {
       a.Color = color(255, 0, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 1.5, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 1.5, height/5 * 3.5) <= 30) {
       a.Color = color(0, 255, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 2, height/5 * 3.5) <= 30) {
       a.Color = color(0, 0, 255);
     }
-    if(dist(mouseX, mouseY, width/8 * 2.5, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 2.5, height/5 * 3.5) <= 30) {
       a.Color = color(255, 255, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 3, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 3, height/5 * 3.5) <= 30) {
       a.Color = color(255, 0, 255);
     }
-    if(dist(mouseX, mouseY, width/8, height/5 * 4.25) <= 30){
+    if (dist(mouseX, mouseY, width/8, height/5 * 4.25) <= 30) {
       a.Color = color(0, 255, 255);
     }
-    if(dist(mouseX, mouseY, width/8 + width/2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 + width/2, height/5 * 3.5) <= 30) {
       b.Color = color(255, 0, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 1.5 + width/2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 1.5 + width/2, height/5 * 3.5) <= 30) {
       b.Color = color(0, 255, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 2 + width/2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 2 + width/2, height/5 * 3.5) <= 30) {
       b.Color = color(0, 0, 255);
     }
-    if(dist(mouseX, mouseY, width/8 * 2.5 + width/2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 2.5 + width/2, height/5 * 3.5) <= 30) {
       b.Color = color(255, 255, 0);
     }
-    if(dist(mouseX, mouseY, width/8 * 3 + width/2, height/5 * 3.5) <= 30){
+    if (dist(mouseX, mouseY, width/8 * 3 + width/2, height/5 * 3.5) <= 30) {
       b.Color = color(255, 0, 255);
     }
-    if(dist(mouseX, mouseY, width/8 + width/2, height/5 * 4.25) <= 30){
+    if (dist(mouseX, mouseY, width/8 + width/2, height/5 * 4.25) <= 30) {
       b.Color = color(0, 255, 255);
     }
-    if(mouseX > width/2-120 && mouseX < width/2+120 && mouseY > (height/5 * 2) - 50 && mouseY < (height/5*2)+50){
+    if (mouseX > width/2-120 && mouseX < width/2+120 && mouseY > (height/5 * 2) - 50 && mouseY < (height/5*2)+50) {
       Mode = "GAME";
+    }
+    break;
+  case "GAME":
+    if (mouseX > width - 98 && mouseX < width - 52 && mouseY > height - 58 && mouseY < height - 12) {
+      Mode = "POWEREDIT";
     }
     break;
   }
