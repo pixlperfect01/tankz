@@ -3,7 +3,7 @@ class Player{
   String name;
   color Color;
   float rot = 0, Health = 100;
-  int Power;
+  int Power = 50;
   Player(float x, float y, String n, color c){
     pos = new PVector(x, y);
     name = n;
