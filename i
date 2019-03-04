@@ -9,15 +9,15 @@ void setup() {
   map = new int[height-150][width];
   a = new Player(200, height - 200, "P1", color(255, 0, 0));
   b = new Player(width - 200, height - 200, "P2", color(0, 255, 0));
-  map = fillArray(width, height-150, color(0, 150, 0));
+  map = fillArray(width, height-150, 0);
 }
 
 void draw() {
   //println(mouseX, mouseY);
   //println(a.Aim);
+  background(0, 150, 0);
   noStroke();
   noFill();
-  background(0);
   switch(Mode) {
   case "STARTUP":
     StartUpMenu();
@@ -40,6 +40,25 @@ void draw() {
   case "MOVERIGHT":
     MoveRight();
     break;
+  case "FIRE":
+    Fire();
+    break;
+  }
+}
+void Fire() {
+  Game();
+  if (Turn == 1) {
+    a.MoveWeapon();
+    if (intersects(a.WeaponPos, 15, b.pos, new PVector(75, 32.5)) || hitGround(a.WeaponPos)) {
+      explode(a.WeaponPos.x, a.WeaponPos.y);
+    }
+    a.ShowWeapon();
+  } else {
+    b.MoveWeapon();
+    if (intersects(b.WeaponPos, 15, a.pos, new PVector(75, 32.5)) || hitGround(b.WeaponPos)) {
+      explode(b.WeaponPos.x, b.WeaponPos.y);
+    }
+    b.ShowWeapon();
   }
 }
 void MoveLeft() {
@@ -268,13 +287,15 @@ void mouseDragged() {
   }
 }
 void DrawMap() {
-  loadPixels();
-  for (int i=0; i<map.length; i++) {
-    for (int j=0; j<map[i].length; j++) {
-      pixels[j * map.length + i] = map[i][j];
+  if (frameCount%2==0) {
+    loadPixels();
+    for (int i=0; i<map.length; i++) {
+      for (int j=0; j<map[i].length; j++) {
+        pixels[j * map.length + i] = map[i][j];
+      }
     }
+    updatePixels();
   }
-  updatePixels();
 }
 void Game() {
   DrawMap();
@@ -548,6 +569,11 @@ void mousePressed() {
       }
     }
     if (mouseX > 312.5 && mouseX < 482.5 && mouseY > height - 100 - 65/2&& mouseY < height - 100 + 65/2) {
+      if (Turn == 1) {
+        a.Fire();
+      } else {
+        b.Fire();
+      }
       Mode = "FIRE";
     }
     break;
@@ -689,6 +715,24 @@ void mousePressed() {
 void explode(float a, float b) {
   int x = int(a);
   int y = int(b);
+  println("HIT");
+  Mode = "GAME";
+  Turn = (Turn + 1) % 3;
+  if (Turn == 0) {
+    Turn = 1;
+  }
+}
+boolean hitGround(PVector pos) {
+  for (int i=(int)max(0, pos.x - 20); i<min(width, pos.x+20); i++) {
+    for (int j=(int)max(0, pos.y - 20); j<min(height-150, pos.y+20); j++) {
+      if(dist(i, j, pos.x, pos.y)<=15){
+        if(map[j][i]!=0){
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 int[][] fillArray(int a, int b, int c) {
   int[][] d = new int[b][a];
@@ -704,4 +748,5 @@ void keyPressed() {
   if (Turn == 0) {
     Turn = 1;
   }
+  //frameRate(1);
 }
