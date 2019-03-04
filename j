@@ -16,12 +16,17 @@ class Player{
   }
   void Fire(){
     WeaponPos = new PVector(pos.x, pos.y);
+    WeaponVel = new PVector((Aim.x - pos.x) * .5, Aim.y - pos.y);
+    WeaponVel.mult(.055);
+    WeaponVel.mult(Power/100);
   }
   void ShowWeapon(){
-    
+    fill(0);
+    ellipse(WeaponPos.x, WeaponPos.y, 30, 30);
   }
   void MoveWeapon(){
-    
+    WeaponPos.add(WeaponVel);
+    WeaponVel.add(new PVector(0, .5));
   }
   void show(){
     pushMatrix();
@@ -37,4 +42,19 @@ class Player{
     
   }
 }
+boolean intersects(PVector circle,float r, PVector rect, PVector c)
+{
+    float circleDistanceX = abs(circle.x - rect.x);
+    float circleDistanceY = abs(circle.y - rect.y);
 
+    if (circleDistanceX > (c.x/2 + r)) { return false; }
+    if (circleDistanceY > (c.y/2 + r)) { return false; }
+
+    if (circleDistanceX <= (c.x/2)) { return true; } 
+    if (circleDistanceY <= (c.y/2)) { return true; }
+
+    float cornerDistance_sq = sq(circleDistanceX - c.x) +
+                         sq(circleDistanceY - c.y);
+
+    return (cornerDistance_sq <= sq(r));
+}
