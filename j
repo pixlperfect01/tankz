@@ -18,7 +18,8 @@ class Player{
     WeaponPos = new PVector(pos.x, pos.y);
     WeaponVel = new PVector((Aim.x - pos.x) * .5, Aim.y - pos.y);
     WeaponVel.mult(.055);
-    WeaponVel.mult(Power/100);
+    WeaponVel.mult(Power/100.0);
+    WeaponCounts[CurrentWeapon]--;
   }
   void ShowWeapon(){
     fill(0);
@@ -37,6 +38,9 @@ class Player{
     fill(Color);
     rect(0, 0, 75, 32.5);
     popMatrix();
+  }
+  void ShowAim(){
+    
   }
   void reset(){
     
