@@ -2,14 +2,15 @@ Player a;
 Player b;
 int Turn = 1;
 String Mode = "STARTUP";
-int[][] map;
-
+PGraphics map;
 void setup() {
   size(1200, 600);
-  map = new int[height-150][width];
+  map = createGraphics(width, height-150);
+  map.beginDraw();
+  map.background(0, 50, 0);
+  map.endDraw();
   a = new Player(200, height - 200, "P1", color(255, 0, 0));
   b = new Player(width - 200, height - 200, "P2", color(0, 255, 0));
-  map = fillArray(width, height-150, 0);
 }
 
 void draw() {
@@ -50,14 +51,22 @@ void Fire() {
   if (Turn == 1) {
     a.MoveWeapon();
     if (intersects(a.WeaponPos, 15, b.pos, new PVector(75, 32.5)) || hitGround(a.WeaponPos)) {
-      explode(a.WeaponPos.x, a.WeaponPos.y);
+      if (intersects(a.WeaponPos, 15, b.pos, new PVector(75, 32.5))) {
+        explode(a.WeaponPos.x, a.WeaponPos.y, 0);
+      } else {
+        explode(a.WeaponPos.x, a.WeaponPos.y, dist(a.WeaponPos.x, a.WeaponPos.y, b.pos.x, b.pos.y));
+      }
     }
     a.ShowWeapon();
   } else {
     b.MoveWeapon();
     if (intersects(b.WeaponPos, 15, a.pos, new PVector(75, 32.5)) || hitGround(b.WeaponPos)) {
-      explode(b.WeaponPos.x, b.WeaponPos.y);
-    }
+      if (intersects(b.WeaponPos, 15, a.pos, new PVector(75, 32.5))) {
+        explode(b.WeaponPos.x, b.WeaponPos.y, 0);
+      } else {
+        explode(b.WeaponPos.x, b.WeaponPos.y, dist(b.WeaponPos.x, b.WeaponPos.y, a.pos.x, a.pos.y));
+      }
+    } 
     b.ShowWeapon();
   }
 }
@@ -70,6 +79,7 @@ void MoveLeft() {
       return;
     }
     a.pos.x -= 1;
+    a.Aim.x -= 1;
     a.MoveDist += 1;
   } else {
     if (b.Moves < 0 || b.MoveDist > 50) {
@@ -78,6 +88,7 @@ void MoveLeft() {
       return;
     }
     b.pos.x -= 1;
+    b.Aim.x -= 1;
     b.MoveDist += 1;
   }
 }
@@ -90,6 +101,7 @@ void MoveRight() {
       return;
     }
     a.pos.x += 1;
+    a.Aim.x += 1;
     a.MoveDist += 1;
   } else {
     if (b.Moves < 0 || b.MoveDist > 50) {
@@ -98,6 +110,7 @@ void MoveRight() {
       return;
     }
     b.pos.x += 1;
+    b.Aim.x += 1;
     b.MoveDist += 1;
   }
 }
@@ -287,15 +300,7 @@ void mouseDragged() {
   }
 }
 void DrawMap() {
-  if (frameCount%2==0) {
-    loadPixels();
-    for (int i=0; i<map.length; i++) {
-      for (int j=0; j<map[i].length; j++) {
-        pixels[j * map.length + i] = map[i][j];
-      }
-    }
-    updatePixels();
-  }
+  image(map, 0, 0);
 }
 void Game() {
   DrawMap();
@@ -305,9 +310,11 @@ void Game() {
   if (Turn == 1) {
     stroke(255);
     line(a.pos.x, a.pos.y, a.Aim.x, a.Aim.y);
+    a.ShowAim();
   } else {
     stroke(255);
     line(b.pos.x, b.pos.y, b.Aim.x, b.Aim.y);
+    b.ShowAim();
   }
   noStroke();
   fill(110);
@@ -384,10 +391,10 @@ void Game() {
   textSize(44);
   if (Turn == 1) {
     textAlign(CORNER, TOP);
-    text(a.WeaponCounts[a.CurrentWeapon], 386, height - 57);
+    text(constrain(a.WeaponCounts[a.CurrentWeapon], 0, 999), 386, height - 57);
   } else {
     textAlign(CORNER, TOP);
-    text(b.WeaponCounts[b.CurrentWeapon], 386, height - 57);
+    text(constrain(b.WeaponCounts[b.CurrentWeapon], 0, 999), 386, height - 57);
   }
   ellipse(200, height - 25, 175, 175);
   noFill();
@@ -570,9 +577,17 @@ void mousePressed() {
     }
     if (mouseX > 312.5 && mouseX < 482.5 && mouseY > height - 100 - 65/2&& mouseY < height - 100 + 65/2) {
       if (Turn == 1) {
-        a.Fire();
+        if (a.WeaponCounts[a.CurrentWeapon] > 0) {
+          a.Fire();
+        } else{
+          return;
+        }
       } else {
-        b.Fire();
+        if (b.WeaponCounts[b.CurrentWeapon] > 0) {
+          b.Fire();
+        }else{
+          return;
+        }
       }
       Mode = "FIRE";
     }
@@ -712,9 +727,14 @@ void mousePressed() {
     break;
   }
 }
-void explode(float a, float b) {
-  int x = int(a);
-  int y = int(b);
+void explode(float i, float j, float dist) {
+  int x = int(i);
+  int y = int(j);
+  if (Turn == 1) {
+    b.Health -= constrain(100 - dist, 0, 100) * .2;
+  } else {
+    a.Health -= constrain(100 - dist, 0, 100) * .2;
+  }
   println("HIT");
   Mode = "GAME";
   Turn = (Turn + 1) % 3;
@@ -723,15 +743,21 @@ void explode(float a, float b) {
   }
 }
 boolean hitGround(PVector pos) {
+  if (pos.y>height-150) {
+    return true;
+  }
+  map.loadPixels();
   for (int i=(int)max(0, pos.x - 20); i<min(width, pos.x+20); i++) {
     for (int j=(int)max(0, pos.y - 20); j<min(height-150, pos.y+20); j++) {
-      if(dist(i, j, pos.x, pos.y)<=15){
-        if(map[j][i]!=0){
+      if (dist(i, j, pos.x, pos.y)<=15) {
+        if (map.pixels[j*map.height+i]==color(0, 0, 0)) {
+          map.updatePixels();
           return true;
         }
       }
     }
   }
+  map.updatePixels();
   return false;
 }
 int[][] fillArray(int a, int b, int c) {
