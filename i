@@ -309,11 +309,9 @@ void Game() {
   b.show();
   if (Turn == 1) {
     stroke(255);
-    line(a.pos.x, a.pos.y, a.Aim.x, a.Aim.y);
     a.ShowAim();
   } else {
     stroke(255);
-    line(b.pos.x, b.pos.y, b.Aim.x, b.Aim.y);
     b.ShowAim();
   }
   noStroke();
