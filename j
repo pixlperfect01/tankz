@@ -3,9 +3,9 @@ class Player {
   String name;
   color Color;
   float rot = 0, Health = 100, MoveDist = 0;
-  int Power = 100, CurrentWeapon = 0, Moves = 6;
+  int Power = 100, CurrentWeapon = 0, Moves = 9;
   String[] Weapons = {"One Shot", "Three Shot", "Five Shot", "Big Shot", "Homing Missile", "Landmine", "Digger", "Air Strike", "Ion Beam", "Napalm", "Dirt Bomb", "Rocket", "Machine Gun", "Roller", "Targeter"};
-  int[] WeaponCounts = {5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5};
+  int[] WeaponCounts = {999, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5};
   Player(float x, float y, String n, color c) {
     pos = new PVector(x, y);
     name = n;
