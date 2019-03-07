@@ -7,16 +7,21 @@ void setup() {
   size(1200, 600);
   map = createGraphics(width, height-150);
   map.beginDraw();
-  map.background(0, 50, 0);
+  map.noStroke();
+  map.background(50, 100, 255);
+  map.fill(255);
+  map.rect(width/2, map.height/2, 50, 200);
+  map.rect(0, map.height - 40, width, map.height);
   map.endDraw();
-  a = new Player(200, height - 200, "P1", color(255, 0, 0));
-  b = new Player(width - 200, height - 200, "P2", color(0, 255, 0));
+  a = new Player(200, height - 210, "P1", color(255, 0, 0));
+  b = new Player(width - 200, height - 210, "P2", color(0, 255, 0));
 }
 
 void draw() {
   //println(mouseX, mouseY);
   //println(a.Aim);
-  background(0, 150, 0);
+  println(Mode);
+  background(999, 233, 200);
   noStroke();
   noFill();
   switch(Mode) {
@@ -44,7 +49,27 @@ void draw() {
   case "FIRE":
     Fire();
     break;
+  case "WIN1":
+    Win1();
+    break;
+  case "WIN2":
+    Win2();
+    break;
   }
+}
+void Win1() {
+  Game();
+  fill(a.Color);
+  textAlign(CENTER);
+  textSize(250);
+  text("P1 WINS!", width/2, height/2);
+}
+void Win2() {
+  Game();
+  fill(b.Color);
+  textAlign(CENTER);
+  textSize(250);
+  text("P2 WINS!", width/2, height/2);
 }
 void Fire() {
   Game();
@@ -78,8 +103,14 @@ void MoveLeft() {
       a.MoveDist = 0;
       return;
     }
-    a.pos.x -= 1;
-    a.Aim.x -= 1;
+    boolean temp = true;
+    map.loadPixels();
+    //for(int x=0;x<
+    map.updatePixels();
+    if (temp) {
+      a.pos.x -= 1;
+      a.Aim.x -= 1;
+    }
     a.MoveDist += 1;
   } else {
     if (b.Moves < 0 || b.MoveDist > 50) {
@@ -300,10 +331,24 @@ void mouseDragged() {
   }
 }
 void DrawMap() {
-  image(map, 0, 0);
+  map.loadPixels();
+  loadPixels();
+  for (int i=0; i<map.pixels.length; i++) {
+    if (map.pixels[i]!=color(0, 0, 0)) {
+      pixels[i] = map.pixels[i];
+    }
+  }
+  updatePixels();
+  map.updatePixels();
 }
 void Game() {
   DrawMap();
+  if (a.Health <= 0) {
+    Mode = "WIN2";
+  }
+  if (b.Health <= 0) {
+    Mode = "WIN1";
+  }
   rectMode(CENTER);
   a.show();
   b.show();
@@ -577,13 +622,13 @@ void mousePressed() {
       if (Turn == 1) {
         if (a.WeaponCounts[a.CurrentWeapon] > 0) {
           a.Fire();
-        } else{
+        } else {
           return;
         }
       } else {
         if (b.WeaponCounts[b.CurrentWeapon] > 0) {
           b.Fire();
-        }else{
+        } else {
           return;
         }
       }
@@ -726,12 +771,10 @@ void mousePressed() {
   }
 }
 void explode(float i, float j, float dist) {
-  int x = int(i);
-  int y = int(j);
   if (Turn == 1) {
-    b.Health -= constrain(100 - dist, 0, 100) * .2;
+    b.Health -= constrain(100 - dist, 0, 100) * .4;
   } else {
-    a.Health -= constrain(100 - dist, 0, 100) * .2;
+    a.Health -= constrain(100 - dist, 0, 100) * .4;
   }
   println("HIT");
   Mode = "GAME";
@@ -739,6 +782,10 @@ void explode(float i, float j, float dist) {
   if (Turn == 0) {
     Turn = 1;
   }
+  map.beginDraw();
+  map.fill(50, 100, 255);
+  map.ellipse(i, j, 50, 50);
+  map.endDraw();
 }
 boolean hitGround(PVector pos) {
   if (pos.y>height-150) {
@@ -748,9 +795,11 @@ boolean hitGround(PVector pos) {
   for (int i=(int)max(0, pos.x - 20); i<min(width, pos.x+20); i++) {
     for (int j=(int)max(0, pos.y - 20); j<min(height-150, pos.y+20); j++) {
       if (dist(i, j, pos.x, pos.y)<=15) {
-        if (map.pixels[j*map.height+i]==color(0, 0, 0)) {
+        if (map.pixels[j*map.width+i]!=color(50, 100, 255)) {
           map.updatePixels();
+          println("HI");
           return true;
+        } else {
         }
       }
     }
@@ -768,9 +817,9 @@ int[][] fillArray(int a, int b, int c) {
   return d;
 }
 void keyPressed() {
-  Turn = (Turn + 1) % 3;
-  if (Turn == 0) {
-    Turn = 1;
-  }
-  //frameRate(1);
+  //Turn = (Turn + 1) % 3;
+  //if (Turn == 0) {
+  //  Turn = 1;
+  //}
+  frameRate(1);
 }
