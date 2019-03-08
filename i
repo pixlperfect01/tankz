@@ -10,10 +10,12 @@ void setup() {
   map.noStroke();
   map.background(50, 100, 255);
   map.fill(255);
-  map.rect(width/2, map.height/2, 50, 200);
-  map.rect(0, map.height - 40, width, map.height);
-  map.rect(0, 0, map.width, map.height);
-  Ground(0, 0, map.width, map.height);
+  Ground(width/2, map.height/2, 50, 200);
+  Ground(0, map.height - 40, width, map.height);
+  Ground(70, 250, 20, 200);
+  Ground(90, 280, 20, 180);
+  Ground(110, 310, 20, 160);
+  Ground(130, 340, 20, 140);
   map.endDraw();
   a = new Player(200, height - 210, "P1", color(255, 0, 0));
   b = new Player(width - 200, height - 210, "P2", color(0, 255, 0));
@@ -775,9 +777,9 @@ void mousePressed() {
 }
 void explode(float i, float j, float dist) {
   if (Turn == 1) {
-    b.Health -= constrain(100 - dist, 0, 100) * .4;
+    b.Health -= constrain(100 - dist, 0, 100) * .15;
   } else {
-    a.Health -= constrain(100 - dist, 0, 100) * .4;
+    a.Health -= constrain(100 - dist, 0, 100) * .15;
   }
   println("HIT");
   Mode = "GAME";
@@ -829,5 +831,6 @@ void keyPressed() {
 
 void Ground(float x, float y, float w, float h) {
   noStroke();
-  
+  map.fill(160, 67, 19);
+  map.rect(x, y, w, h);
 }
