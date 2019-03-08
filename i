@@ -12,15 +12,17 @@ void setup() {
   map.fill(255);
   map.rect(width/2, map.height/2, 50, 200);
   map.rect(0, map.height - 40, width, map.height);
+  map.rect(0, 0, map.width, map.height);
+  Ground(0, 0, map.width, map.height);
   map.endDraw();
   a = new Player(200, height - 210, "P1", color(255, 0, 0));
   b = new Player(width - 200, height - 210, "P2", color(0, 255, 0));
 }
-
 void draw() {
+  frameRate(60);
   //println(mouseX, mouseY);
   //println(a.Aim);
-  println(Mode);
+  println(frameRate);
   background(999, 233, 200);
   noStroke();
   noFill();
@@ -331,15 +333,16 @@ void mouseDragged() {
   }
 }
 void DrawMap() {
-  map.loadPixels();
-  loadPixels();
-  for (int i=0; i<map.pixels.length; i++) {
-    if (map.pixels[i]!=color(0, 0, 0)) {
-      pixels[i] = map.pixels[i];
-    }
-  }
-  updatePixels();
-  map.updatePixels();
+  //map.loadPixels();
+  //loadPixels();
+  //for (int i=0; i<map.pixels.length; i++) {
+  //  if (map.pixels[i]!=color(0, 0, 0)) {
+  //    pixels[i] = map.pixels[i];
+  //  }
+  //}
+  //updatePixels();
+  //map.updatePixels();
+  image(map, 0, 0);
 }
 void Game() {
   DrawMap();
@@ -821,5 +824,10 @@ void keyPressed() {
   //if (Turn == 0) {
   //  Turn = 1;
   //}
-  frameRate(1);
+  //frameRate(1);
+}
+
+void Ground(float x, float y, float w, float h) {
+  noStroke();
+  
 }
